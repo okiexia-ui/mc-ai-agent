@@ -4,7 +4,7 @@ const path = require('path')
 const readline = require('readline')
 const mineflayer = require('mineflayer')
 const { pathfinder } = require('mineflayer-pathfinder')
-const { registerSkills, initAutoEat } = require('./skills')
+const { registerSkills, initAutoEat, nearestThreat } = require('./skills')
 const { runGoal } = require('./agent')
 
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.json'), 'utf8'))
@@ -75,9 +75,39 @@ function dispatch(speaker, text, fromTerminal) {
   startGoal(speaker, text) // 新指令自动打断旧目标
 }
 
+// 感知自动反应：低血量自动逃跑；空闲时遇敌自动战斗
+function initAutoDefense() {
+  if (config.autoDefense === false) return
+  const fleeHP = config.fleeHealth || 8
+  let fleeing = false, defending = false
+  setInterval(() => {
+    if (!skills || !bot.entity) return
+    const threat = nearestThreat(bot, 12)
+    // 1) 低血量 + 有威胁 → 打断一切去逃命
+    if (bot.health <= fleeHP && threat) {
+      if (!fleeing) {
+        fleeing = true; defending = false
+        console.log('⚠️  低血量，自动逃跑')
+        if (activeGoal) activeGoal.abort = true
+        bot.chat('血量危险，先撤！')
+        skills.flee()
+      }
+      return
+    }
+    fleeing = false
+    // 2) 空闲 + 健康 + 敌人靠近 → 自动应战
+    if (config.autoDefend !== false && !activeGoal && threat && threat.position.distanceTo(bot.entity.position) < 7) {
+      if (!defending) { defending = true; console.log('⚔️  遇敌，自动应战'); skills.guard({}) }
+    } else if (defending && !threat) {
+      defending = false; skills.stop()
+    }
+  }, 700)
+}
+
 bot.once('spawn', () => {
   skills = registerSkills(bot, { masters: config.masters })
   initAutoEat(bot) // 饿了自动吃东西
+  initAutoDefense() // 低血逃跑 / 遇敌自卫
   console.log(`✅ 机器人 "${config.username}" 已进入服务器`)
   console.log('⌨️  现在可以直接在这个终端里打字命令它（例如：做一把木镐）。游戏里则用 "bot ..."。')
   bot.chat('AI 机器人上线了，叫我做事吧~')

@@ -10,6 +10,7 @@ const AGENT_SYSTEM = `你是一个 Minecraft 自主智能体。玩家给你一�
 可用动作(就是你的工具)：
 - come{player} 去玩家身边 / follow{player} 跟随 / goto{x,y,z} 去坐标
 - collect{block,count} 采集指定方块(英文ID,会扫描整片已加载区块穿墙找矿、自动用最佳工具寻路过去) / mine{direction,length} 盲挖隧道(forward/down/up)
+- explore{target} 远程探索:身边找不到资源时往外走加载新区块找(target填要找的方块ID) / flee{} 逃跑(逃向主人或远离威胁)
 - craft{item,count} 合成(英文ID,会自动找/需要工作台) / smelt{input,count} 烧炼(矿石/食物,自动找熔炉加燃料)
 - place{block} 放方块(默认放身前)
 - attack{target} 攻击一次目标(怪名/玩家名/nearest) / guard{target} 进入"自动战斗模式"持续打(target填mobs打怪/players打除主人外玩家/具体名字)
@@ -29,6 +30,7 @@ Minecraft 合成常识(供你规划)：
 - 没工作台/熔炉就先 place 一个(背包里要有)。规划时先看【当前状态】的背包，已有的别重复做。
 - 想要某种矿石/方块：先用 collect(它能穿墙扫整片区域找现成的矿)；只有 collect 报"没找到"才用 mine 往下挖到对应高度(钻石约y<16,铁矿y<60)出新区块,再 collect。注意 collect 的 block 必须是方块ID：矿石用 *_ore 形式(如 diamond_ore、iron_ore，不是 diamond、iron)。
 - 挖矿石时如果玩家没明确说数量(如"去挖钻石""挖点铁矿")，collect 的 count 用 "all" 把范围内能找到的全挖了；只有玩家明确说了数字(如"挖3个")才用那个数字。
+- 如果 collect 报"整片区域没找到X"，就用 explore({target:"X"}) 往外走找，找到后再 collect。地表找不到矿(铁/钻)就用 mine 往下挖到对应高度。
 
 - "穿盔甲/装备盔甲"用 armor(背包有就直接穿,不要craft)；"拿出/装备某物"用 equip。实在不确定该做什么就用 say 反问，别乱选 craft。
 - "上船/坐船/骑马"用 mount 去坐附近现成的载具；如果 mount 返回"附近没有载具"，就 say 告诉玩家附近没有，**不要**自作主张去造船/抓马，除非玩家明确说"造一艘船"。

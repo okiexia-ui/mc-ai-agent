@@ -18,6 +18,14 @@
   "maxSteps": 25,
   "comment_maxSteps": "Agent 完成一个目标最多走多少步,防止无限循环",
 
+  "comment_auto": "===== 自动反应 =====",
+  "autoDefense": true,
+  "comment_autoDefense": "总开关：低血量自动逃跑 + 空闲时遇敌自动战斗",
+  "fleeHealth": 8,
+  "comment_fleeHealth": "生命值(满20)低于这个数且附近有怪时，自动逃跑",
+  "autoDefend": true,
+  "comment_autoDefend": "空闲(没在执行任务)时，敌人靠近7格内自动应战",
+
   "comment3": "===== 权限 =====",
   "masters": [],
   "comment_masters": "只听这些玩家的指令（填你的游戏ID，如 [\"YourName\"]）。留空 [] 表示听所有人的。",

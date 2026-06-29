@@ -55,15 +55,15 @@ bot 停                  (随时打断当前任务)
 ```
 
 ## 底层技能（27个，Agent 把它们组合起来用）
-- 移动：come 过来 / follow 跟随 / goto 去坐标 / mount 上载具 / dismount 下来
+- 移动：come 过来 / follow 跟随 / goto 去坐标 / explore 远程探索 / mount 上载具 / dismount 下来
 - 收集：collect 智能采矿 / mine 挖隧道 / pickup 捡掉落物
 - 制作：craft 合成 / smelt 烧炼 / place 放方块
 - 物品：inventory 背包 / equip 装备 / armor 穿盔甲 / drop 丢出 / deposit 存箱子 / withdraw 取箱子
-- 战斗：attack 攻击一次 / guard 自动战斗模式
+- 战斗：attack 攻击一次 / guard 自动战斗模式 / flee 逃跑
 - 交互：useBlock 用方块(门/拉杆/按钮) / interact 对实体(剪毛/挤奶/繁殖/交易)
 - 生存：eat 吃东西 / fish 钓鱼 / sleep 睡觉 / wake 起床
 - 其它：stop 停 / say 说话
-另有「饿了自动吃东西」后台自动运行。
+另有后台自动运行：**饿了自动吃东西**、**低血量自动逃跑**、**空闲遇敌自动应战**（可在 config.json 用 autoDefense/fleeHealth/autoDefend 开关）。
 
 参考外挂 client 增强的能力（机器人本就拥有已加载区块数据，属合法使用）：
 - **collect 智能采矿**：穿墙扫描整片已加载区块找矿(=矿透)、自动装备最佳工具、自动寻路挖路过去

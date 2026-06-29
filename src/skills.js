@@ -9,6 +9,12 @@ const HOSTILE = ['zombie', 'husk', 'drowned', 'skeleton', 'stray', 'spider', 'ca
 const RIDEABLE = ['boat', 'chest_boat', 'minecart', 'horse', 'donkey', 'mule', 'pig', 'strider', 'camel', 'llama']
 const TOOL_TIERS = ['netherite', 'diamond', 'iron', 'stone', 'golden', 'wooden'] // 从好到差
 
+// 找最近的敌对怪（供自动防御守护进程用）
+function nearestThreat(bot, range = 12) {
+  return bot.nearestEntity(e => e && e.type === 'mob' && HOSTILE.includes(e.name) &&
+    e.position.distanceTo(bot.entity.position) < range)
+}
+
 function registerSkills(bot, opts = {}) {
   const masters = opts.masters || []
   const mcData = require('minecraft-data')(bot.version)
@@ -100,6 +106,29 @@ function registerSkills(bot, opts = {}) {
       fresh()
       await bot.pathfinder.goto(new goals.GoalBlock(Math.floor(x), Math.floor(y), Math.floor(z)))
       return `到达 ${x} ${y} ${z}`
+    },
+
+    // 远程探索：身边没目标资源时，往外走加载新区块去找（target 填要找的方块ID，可选）
+    async explore({ target, steps = 8 } = {}) {
+      const bt = target ? mcData.blocksByName[target] : null
+      if (target && !bt) return `不认识方块 ${target}`
+      const startY = Math.round(bot.entity.position.y)
+      for (let i = 0; i < steps; i++) {
+        if (bt) { // 边走边看，找到就停
+          const found = bot.findBlock({ matching: bt.id, maxDistance: 128 })
+          if (found) return `找到 ${target} 了（在附近，可以 collect 了）`
+        }
+        // 每次朝一个方向走约 32 格，加载新地形
+        const angle = (i / steps) * 2 * Math.PI + Math.random() * 0.8
+        const dest = bot.entity.position.offset(Math.round(Math.cos(angle) * 32), 0, Math.round(Math.sin(angle) * 32))
+        fresh()
+        try { await bot.pathfinder.goto(new goals.GoalNear(Math.floor(dest.x), startY, Math.floor(dest.z), 4)) } catch (e) {}
+      }
+      if (bt) {
+        const found = bot.findBlock({ matching: bt.id, maxDistance: 128 })
+        return found ? `找到 ${target} 了` : `走了一圈还没找到 ${target}，可能要换个方向或往地下找`
+      }
+      return '四处探索了一圈'
     },
 
     // 采集/挖矿：扫描整片已加载区块找方块(相当于"矿透")，自动用最佳工具、自动寻路挖路过去
@@ -441,6 +470,22 @@ function registerSkills(bot, opts = {}) {
     // 起床
     wake() { bot.wake().catch(() => {}); return '醒了' },
 
+    // 逃跑：优先逃向主人，否则朝远离威胁的方向跑
+    async flee() {
+      const master = masters.map(n => bot.players[n]?.entity).find(Boolean)
+      fresh()
+      if (master) { bot.pathfinder.setGoal(new goals.GoalFollow(master, 2), true); return '逃向主人' }
+      const threat = nearestThreat(bot, 20)
+      if (threat) {
+        const dir = bot.entity.position.minus(threat.position)
+        const len = dir.norm() || 1
+        const dest = bot.entity.position.plus(dir.scaled(16 / len))
+        bot.pathfinder.setGoal(new goals.GoalNear(Math.floor(dest.x), Math.floor(dest.y), Math.floor(dest.z), 2))
+        return '逃离威胁'
+      }
+      return '附近没有威胁'
+    },
+
     // 自动战斗模式：持续锁定并攻击范围内目标（说"停"结束）
     // target: 不填/"mobs"=敌对怪; "players"=除主人外的玩家; 也可填具体名字
     guard({ target } = {}) {
@@ -502,4 +547,4 @@ function initAutoEat(bot) {
   })
 }
 
-module.exports = { registerSkills, initAutoEat }
+module.exports = { registerSkills, initAutoEat, nearestThreat }
