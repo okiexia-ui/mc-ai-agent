@@ -1,0 +1,16 @@
+{
+  "name": "mc-ai-agent",
+  "version": "0.1.0",
+  "description": "一个用自然语言指挥的 Minecraft AI 机器人 (Mineflayer + OpenRouter)",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mineflayer": "^4.37.1",
+    "mineflayer-pathfinder": "^2.4.5",
+    "minecraft-data": "^3.96.0"
+  }
+}

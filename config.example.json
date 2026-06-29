@@ -1,0 +1,26 @@
+{
+  "comment": "===== 连接设置 ===== 复制本文件为 config.json 后填写",
+  "host": "127.0.0.1",
+  "port": 25568,
+  "comment_port": "机器人要连的地址。跨版本服需经 ViaProxy 时填本地 ViaProxy 端口；同版本可直接填服务器地址端口。",
+
+  "username": "AI_Bot",
+  "comment_username": "机器人在游戏里的名字（离线/offline-mode 服随便起）",
+
+  "version": "1.21.4",
+  "comment_version": "机器人说话用的协议版本，必须是 Mineflayer 支持的版本(<=1.21.11)。更高版本的服需用 ViaProxy 翻译。",
+
+  "comment2": "===== 大脑设置 =====",
+  "provider": "zhipu",
+  "comment_provider": "用哪家LLM: zhipu(智谱,免费国内直连) / deepseek / openrouter / google。对应的 key 填到 .env",
+  "model": "glm-4.5-flash",
+  "comment_model": "复杂任务用 glm-4.5-flash(推理强,免费)；想快用 glm-4-flash。deepseek 用 deepseek-chat",
+  "maxSteps": 25,
+  "comment_maxSteps": "Agent 完成一个目标最多走多少步,防止无限循环",
+
+  "comment3": "===== 权限 =====",
+  "masters": [],
+  "comment_masters": "只听这些玩家的指令（填你的游戏ID，如 [\"YourName\"]）。留空 [] 表示听所有人的。",
+  "trigger": "bot",
+  "comment_trigger": "聊天里以这个词开头才触发，例如 'bot 过来'。设为空字符串 \"\" 则每句话都触发。"
+}
