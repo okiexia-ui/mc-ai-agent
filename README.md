@@ -13,7 +13,7 @@
 
 ## 一次性准备
 
-### 1. 装 Node 依赖（需 Node 18+）
+### 1. 装 Node 依赖（需 Node 22+）
 ```bash
 npm install
 ```

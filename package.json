@@ -2,10 +2,24 @@
   "name": "mc-ai-agent",
   "version": "0.1.0",
   "description": "一个用自然语言指挥的 Minecraft AI 机器人 (Mineflayer + OpenRouter)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okiexia-ui/mc-ai-agent.git"
+  },
+  "keywords": ["minecraft", "mineflayer", "ai", "agent"],
+  "bugs": {
+    "url": "https://github.com/okiexia-ui/mc-ai-agent/issues"
+  },
+  "homepage": "https://github.com/okiexia-ui/mc-ai-agent#readme",
+  "engines": {
+    "node": ">=22"
+  },
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "node --test"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
